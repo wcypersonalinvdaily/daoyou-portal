@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>道友 · 六宫格</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0e14;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);
+  --text:rgba(255,255,255,0.88);--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.18);
+  --green:#4ade80;--amber:#fbbf24;--pink:#f472b6;--blue:#60a5fa;--purple:#a78bfa;--accent:#64ffda;
+}
+body{font-family:'Noto Sans SC','Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+
+.header{text-align:center;margin-bottom:48px}
+.header h1{font-weight:300;font-size:1.6rem;letter-spacing:0.15em;color:var(--text)}
+.header h1 em{font-style:normal;color:var(--accent)}
+.header .sub{font-size:0.72rem;color:var(--text3);letter-spacing:0.4em;margin-top:8px}
+.line{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:14px auto 0}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:720px;width:100%}
+
+.card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 16px;border-radius:14px;
+  background:var(--surface);border:1px solid var(--border);
+  text-decoration:none;color:var(--text);
+  transition:all 0.25s;cursor:pointer;position:relative;overflow:hidden;
+  min-height:130px;
+}
+.card::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  background:radial-gradient(ellipse at center,var(--glow) 0%,transparent 70%);
+  transition:opacity 0.3s;
+}
+.card:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.card:hover::before{opacity:0.08}
+.card:active{transform:translateY(-1px)}
+
+.icon{font-size:2rem;margin-bottom:10px;line-height:1}
+.name{font-size:0.92rem;font-weight:500;letter-spacing:0.05em;color:var(--c)}
+.desc{font-size:0.68rem;color:var(--text3);margin-top:4px;text-align:center;line-height:1.5}
+.badge{
+  position:absolute;top:10px;right:10px;
+  font-size:0.58rem;padding:2px 7px;border-radius:10px;
+  font-weight:500;letter-spacing:0.03em;
+}
+.badge-live{background:rgba(74,222,128,0.12);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+
+.footer{margin-top:40px;text-align:center}
+.footer p{font-size:0.68rem;color:var(--text3);letter-spacing:0.25em}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .card{min-height:110px;padding:20px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><em>道友</em> · 六宫格</h1>
+  <div class="line"></div>
+  <div class="sub">大道至简 · 一元统御</div>
+</div>
+
+<div class="grid">
+
+  <a class="card" href="https://daoyou-life-manager.vercel.app" target="_blank" style="--c:var(--green);--glow:var(--green)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">📈</div>
+    <div class="name">投资</div>
+    <div class="desc">3D财富仪表盘<br>纪律执行 · 复利增长</div>
+  </a>
+
+  <a class="card" href="https://jx-site-report.vercel.app" target="_blank" style="--c:var(--amber);--glow:var(--amber)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">🏗️</div>
+    <div class="name">工作</div>
+    <div class="desc">日报 · QS Claim<br>系统化管理</div>
+  </a>
+
+  <a class="card" href="https://daoyou-health-image.vercel.app" target="_blank" style="--c:var(--pink);--glow:var(--pink)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">💪</div>
+    <div class="name">健康</div>
+    <div class="desc">Health & Image<br>身体是一切的基础</div>
+  </a>
+
+  <a class="card" href="https://daoyou-daily-wisdom.vercel.app" target="_blank" style="--c:var(--blue);--glow:var(--blue)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">📚</div>
+    <div class="name">学习</div>
+    <div class="desc">Daily Wisdom<br>持续进化</div>
+  </a>
+
+  <a class="card" href="https://daoyou-life-manager.vercel.app" target="_blank" style="--c:var(--purple);--glow:var(--purple)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">🏠</div>
+    <div class="name">生活</div>
+    <div class="desc">Life Manager<br>化繁为简</div>
+  </a>
+
+  <a class="card" href="https://daoyou-growth-guanfu.vercel.app" target="_blank" style="--c:var(--accent);--glow:var(--accent)">
+    <span class="badge badge-live">LIVE</span>
+    <div class="icon">🌱</div>
+    <div class="name">成长</div>
+    <div class="desc">Growth 观复<br>清醒的建筑师</div>
+  </a>
+
+</div>
+
+<div class="footer">
+  <p>道友 · 2026 · 元统御</p>
+</div>
+
+</body>
+</html>
