@@ -1,120 +1,170 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>道友 · 六宫格</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0b0e14;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);
-  --text:rgba(255,255,255,0.88);--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.18);
-  --green:#4ade80;--amber:#fbbf24;--pink:#f472b6;--blue:#60a5fa;--purple:#a78bfa;--accent:#64ffda;
-}
-body{font-family:'Noto Sans SC','Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>道友 · 系统门户</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#08101d;
+      --panel:#111a2b;
+      --panel-2:#17233a;
+      --border:rgba(255,255,255,.08);
+      --text:#eef4ff;
+      --muted:#97a6c6;
+      --green:#4ade80;
+      --amber:#fbbf24;
+      --pink:#f472b6;
+      --blue:#60a5fa;
+      --purple:#a78bfa;
+      --cyan:#67e8f9;
+      --orange:#fb923c;
+      --shadow:0 18px 40px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:radial-gradient(circle at top, #10203b 0%, #08101d 42%, #060b14 100%);color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;min-height:100%}
+    body{padding:20px 14px 36px}
+    .wrap{max-width:1080px;margin:0 auto}
+    .hero{padding:24px;border-radius:24px;background:rgba(17,26,43,.82);backdrop-filter:blur(14px);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px}
+    .hero h1{font-size:1.45rem;font-weight:800;letter-spacing:.04em;margin-bottom:8px}
+    .hero h1 em{font-style:normal;color:var(--cyan)}
+    .hero p{color:var(--muted);line-height:1.6;font-size:.95rem}
+    .hero .sub{margin-top:10px;font-size:.8rem;color:#7081a8;letter-spacing:.08em}
 
-.header{text-align:center;margin-bottom:48px}
-.header h1{font-weight:300;font-size:1.6rem;letter-spacing:0.15em;color:var(--text)}
-.header h1 em{font-style:normal;color:var(--accent)}
-.header .sub{font-size:0.72rem;color:var(--text3);letter-spacing:0.4em;margin-top:8px}
-.line{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:14px auto 0}
+    .section{margin-top:22px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .section-title h2{font-size:1rem;font-weight:800}
+    .section-title span{font-size:.82rem;color:var(--muted)}
 
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:720px;width:100%}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .card{
+      display:block;text-decoration:none;color:var(--text);
+      background:linear-gradient(180deg,rgba(23,35,58,.92),rgba(17,26,43,.96));
+      border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:var(--shadow);
+      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+      min-height:176px;position:relative;overflow:hidden;
+    }
+    .card:hover{transform:translateY(-4px);border-color:var(--c);box-shadow:0 22px 50px rgba(0,0,0,.45)}
+    .card::after{content:'';position:absolute;inset:auto -20% -30% auto;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.12;pointer-events:none}
+    .tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:800;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--c);margin-bottom:14px}
+    .icon{font-size:1.9rem;line-height:1;margin-bottom:12px}
+    .name{font-size:1rem;font-weight:800;margin-bottom:8px}
+    .desc{font-size:.86rem;line-height:1.55;color:var(--muted)}
+    .url{margin-top:12px;font-size:.75rem;color:#7f91b8;word-break:break-all}
 
-.card{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:28px 16px;border-radius:14px;
-  background:var(--surface);border:1px solid var(--border);
-  text-decoration:none;color:var(--text);
-  transition:all 0.25s;cursor:pointer;position:relative;overflow:hidden;
-  min-height:130px;
-}
-.card::before{
-  content:'';position:absolute;inset:0;opacity:0;
-  background:radial-gradient(ellipse at center,var(--glow) 0%,transparent 70%);
-  transition:opacity 0.3s;
-}
-.card:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
-.card:hover::before{opacity:0.08}
-.card:active{transform:translateY(-1px)}
+    .quick-list{display:grid;gap:10px}
+    .quick-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:rgba(17,26,43,.84);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .quick-item .left{display:flex;flex-direction:column;gap:4px}
+    .quick-item .title{font-weight:800}
+    .quick-item .meta{font-size:.82rem;color:var(--muted);word-break:break-all}
+    .quick-item a{color:var(--cyan);text-decoration:none;font-weight:700}
 
-.icon{font-size:2rem;margin-bottom:10px;line-height:1}
-.name{font-size:0.92rem;font-weight:500;letter-spacing:0.05em;color:var(--c)}
-.desc{font-size:0.68rem;color:var(--text3);margin-top:4px;text-align:center;line-height:1.5}
-.badge{
-  position:absolute;top:10px;right:10px;
-  font-size:0.58rem;padding:2px 7px;border-radius:10px;
-  font-weight:500;letter-spacing:0.03em;
-}
-.badge-live{background:rgba(74,222,128,0.12);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
-
-.footer{margin-top:40px;text-align:center}
-.footer p{font-size:0.68rem;color:var(--text3);letter-spacing:0.25em}
-
-@media(max-width:600px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .card{min-height:110px;padding:20px 12px}
-}
-</style>
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){
+      body{padding:14px 12px 28px}
+      .hero{padding:18px;border-radius:20px}
+      .grid{grid-template-columns:1fr}
+      .quick-item{flex-direction:column;align-items:flex-start}
+    }
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="hero">
+      <h1><em>道友</em> · 系统门户</h1>
+      <p>所有系统收口到这里。以后不用到处翻链接，点一下就进对应系统。</p>
+      <div class="sub">六域 + 业务系统 + 统一入口</div>
+    </div>
 
-<div class="header">
-  <h1><em>道友</em> · 六宫格</h1>
-  <div class="line"></div>
-  <div class="sub">大道至简 · 一元统御</div>
-</div>
+    <div class="section">
+      <div class="section-title">
+        <h2>六域系统</h2>
+        <span>人生系统的主框架</span>
+      </div>
+      <div class="grid">
+        <a class="card" href="https://daoyou-health-image.vercel.app" target="_blank" rel="noopener" style="--c:var(--pink);--glow:var(--pink)">
+          <div class="tag">LIVE · Health</div>
+          <div class="icon">💪</div>
+          <div class="name">健康</div>
+          <div class="desc">训练、体重体脂、睡眠、Dashboard。身体是一切的底座。</div>
+          <div class="url">daoyou-health-image.vercel.app</div>
+        </a>
 
-<div class="grid">
+        <a class="card" href="https://daoyou-growth-guanfu-qkfz5cdjw-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener" style="--c:var(--cyan);--glow:var(--cyan)">
+          <div class="tag">LIVE · Growth</div>
+          <div class="icon">🌱</div>
+          <div class="name">成长《观复》</div>
+          <div class="desc">个人成长、模式观察、复盘沉淀。看清自己，不再糊着活。</div>
+          <div class="url">daoyou-growth-guanfu...</div>
+        </a>
 
-  <a class="card" href="https://daoyou-3d-wealth.vercel.app" target="_blank" style="--c:var(--green);--glow:var(--green)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">📈</div>
-    <div class="name">投资</div>
-    <div class="desc">3D财富仪表盘<br>纪律执行 · 复利增长</div>
-  </a>
+        <a class="card" href="https://daoyou-daily-wisdom-3uzvzf3mh-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener" style="--c:var(--blue);--glow:var(--blue)">
+          <div class="tag">LIVE · Wisdom</div>
+          <div class="icon">📚</div>
+          <div class="name">学习</div>
+          <div class="desc">知识记录、输入输出、每日智慧沉淀。</div>
+          <div class="url">daoyou-daily-wisdom...</div>
+        </a>
 
-  <a class="card" href="https://jx-site-report.vercel.app" target="_blank" style="--c:var(--amber);--glow:var(--amber)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">🏗️</div>
-    <div class="name">工作</div>
-    <div class="desc">日报 · QS Claim<br>系统化管理</div>
-  </a>
+        <a class="card" href="https://daoyou-life-manager-cnz9kupgj-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener" style="--c:var(--purple);--glow:var(--purple)">
+          <div class="tag">LIVE · Life</div>
+          <div class="icon">🏠</div>
+          <div class="name">生活</div>
+          <div class="desc">生活杂务、日常管理、化繁为简。</div>
+          <div class="url">daoyou-life-manager...</div>
+        </a>
 
-  <a class="card" href="https://daoyou-health-image.vercel.app" target="_blank" style="--c:var(--pink);--glow:var(--pink)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">💪</div>
-    <div class="name">健康</div>
-    <div class="desc">Health & Image<br>身体是一切的基础</div>
-  </a>
+        <a class="card" href="https://daoyou-3d-wealth-q945t1iz8-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener" style="--c:var(--green);--glow:var(--green)">
+          <div class="tag">LIVE · Wealth</div>
+          <div class="icon">📈</div>
+          <div class="name">财富</div>
+          <div class="desc">投资纪律、资产跟踪、复利路径。</div>
+          <div class="url">daoyou-3d-wealth...</div>
+        </a>
+      </div>
+    </div>
 
-  <a class="card" href="https://daoyou-daily-wisdom.vercel.app" target="_blank" style="--c:var(--blue);--glow:var(--blue)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">📚</div>
-    <div class="name">学习</div>
-    <div class="desc">Daily Wisdom<br>持续进化</div>
-  </a>
+    <div class="section">
+      <div class="section-title">
+        <h2>业务系统</h2>
+        <span>工作直接用</span>
+      </div>
+      <div class="grid">
+        <a class="card" href="https://jx-qs-claim.vercel.app" target="_blank" rel="noopener" style="--c:var(--amber);--glow:var(--amber)">
+          <div class="tag">LIVE · QS</div>
+          <div class="icon">📁</div>
+          <div class="name">QS Claim Manager</div>
+          <div class="desc">QS 文件上传、归档、筛选、汇总。</div>
+          <div class="url">jx-qs-claim.vercel.app</div>
+        </a>
 
-  <a class="card" href="https://daoyou-life-manager.vercel.app" target="_blank" style="--c:var(--purple);--glow:var(--purple)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">🏠</div>
-    <div class="name">生活</div>
-    <div class="desc">Life Manager<br>化繁为简</div>
-  </a>
+        <a class="card" href="https://jx-site-report-6uqwudw0y-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener" style="--c:var(--orange);--glow:var(--orange)">
+          <div class="tag">LIVE · Report</div>
+          <div class="icon">🏗️</div>
+          <div class="name">JX Site Report</div>
+          <div class="desc">工地日报、现场记录、项目汇报前端入口。</div>
+          <div class="url">jx-site-report-6uqwud...</div>
+        </a>
+      </div>
+    </div>
 
-  <a class="card" href="https://daoyou-growth-guanfu.vercel.app" target="_blank" style="--c:var(--accent);--glow:var(--accent)">
-    <span class="badge badge-live">LIVE</span>
-    <div class="icon">🌱</div>
-    <div class="name">成长</div>
-    <div class="desc">Growth 观复<br>清醒的建筑师</div>
-  </a>
-
-</div>
-
-<div class="footer">
-  <p>道友 · 2026 · 元统御</p>
-</div>
-
+    <div class="section">
+      <div class="section-title">
+        <h2>快速清单</h2>
+        <span>复制链接更方便</span>
+      </div>
+      <div class="quick-list">
+        <div class="quick-item"><div class="left"><div class="title">Portal</div><div class="meta">https://daoyou-portal.vercel.app</div></div><a href="https://daoyou-portal.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">Health</div><div class="meta">https://daoyou-health-image.vercel.app</div></div><a href="https://daoyou-health-image.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">Growth《观复》</div><div class="meta">https://daoyou-growth-guanfu-qkfz5cdjw-wcypersonalinvdailys-projects.vercel.app</div></div><a href="https://daoyou-growth-guanfu-qkfz5cdjw-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">Wisdom</div><div class="meta">https://daoyou-daily-wisdom-3uzvzf3mh-wcypersonalinvdailys-projects.vercel.app</div></div><a href="https://daoyou-daily-wisdom-3uzvzf3mh-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">Life</div><div class="meta">https://daoyou-life-manager-cnz9kupgj-wcypersonalinvdailys-projects.vercel.app</div></div><a href="https://daoyou-life-manager-cnz9kupgj-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">Wealth</div><div class="meta">https://daoyou-3d-wealth-q945t1iz8-wcypersonalinvdailys-projects.vercel.app</div></div><a href="https://daoyou-3d-wealth-q945t1iz8-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">QS Claim Manager</div><div class="meta">https://jx-qs-claim.vercel.app</div></div><a href="https://jx-qs-claim.vercel.app" target="_blank" rel="noopener">打开</a></div>
+        <div class="quick-item"><div class="left"><div class="title">JX Site Report</div><div class="meta">https://jx-site-report-6uqwudw0y-wcypersonalinvdailys-projects.vercel.app</div></div><a href="https://jx-site-report-6uqwudw0y-wcypersonalinvdailys-projects.vercel.app" target="_blank" rel="noopener">打开</a></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
