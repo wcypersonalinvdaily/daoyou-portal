@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>道友 · 人物卡片</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#08101d;--panel:#111a2b;--panel-2:#17233a;
+  --border:rgba(255,255,255,.08);--text:#eef4ff;--muted:#97a6c6;
+  --enemy:#ff6b61;--neutral:#9ca3af;--partner:#4ade80;--lawyer:#fb923c;
+  --love:#c084fc;--family:#60a5fa;--friend:#fde047;--self:#facc15;
+  --shadow:0 18px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:radial-gradient(circle at top,#10203b 0%,#08101d 42%,#060b14 100%);
+  color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;min-height:100%;
+}
+body{padding:20px 14px 40px}
+.wrap{max-width:1180px;margin:0 auto}
+.hero{
+  padding:26px 28px;border-radius:24px;
+  background:rgba(17,26,43,.82);backdrop-filter:blur(14px);
+  border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:22px;
+}
+.hero h1{font-size:1.6rem;font-weight:800;letter-spacing:.04em;margin-bottom:8px}
+.hero h1 em{font-style:normal;color:var(--self)}
+.hero p{color:var(--muted);line-height:1.6;font-size:.95rem;max-width:720px}
+.hero .sub{margin-top:10px;font-size:.8rem;color:#7081a8;letter-spacing:.08em}
+
+.filters{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;
+  padding:12px 14px;border-radius:18px;
+  background:rgba(17,26,43,.6);border:1px solid var(--border);
+}
+.filter-btn{
+  padding:8px 14px;border-radius:999px;font-size:.82rem;font-weight:700;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);cursor:pointer;transition:all .18s ease;
+}
+.filter-btn:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.filter-btn.active{background:rgba(255,255,255,.12);color:var(--text);border-color:rgba(255,255,255,.22)}
+.filter-btn .count{opacity:.6;margin-left:4px}
+
+.grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.card{
+  display:block;cursor:pointer;text-decoration:none;color:var(--text);
+  background:linear-gradient(180deg,rgba(23,35,58,.92),rgba(17,26,43,.96));
+  border:1px solid var(--border);border-radius:20px;padding:18px;
+  box-shadow:var(--shadow);transition:all .18s ease;
+  min-height:180px;position:relative;overflow:hidden;
+}
+.card:hover{transform:translateY(-4px);border-color:var(--c);box-shadow:0 22px 50px rgba(0,0,0,.5)}
+.card::after{
+  content:'';position:absolute;inset:auto -20% -30% auto;
+  width:130px;height:130px;border-radius:50%;
+  background:radial-gradient(circle,var(--c),transparent 70%);
+  opacity:.15;pointer-events:none;
+}
+.card .tag{
+  display:inline-flex;align-items:center;padding:5px 10px;
+  border-radius:999px;font-size:.7rem;font-weight:800;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:var(--c);margin-bottom:12px;
+}
+.card .name{font-size:1.35rem;font-weight:800;margin-bottom:6px;letter-spacing:.02em}
+.card .sub{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:14px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{font-size:.72rem;color:#7081a8}
+
+.card.enemy{--c:var(--enemy)}
+.card.neutral{--c:var(--neutral)}
+.card.partner{--c:var(--partner)}
+.card.lawyer{--c:var(--lawyer)}
+.card.love{--c:var(--love)}
+.card.family{--c:var(--family)}
+.card.friend{--c:var(--friend)}
+.card.self{--c:var(--self)}
+
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){body{padding:14px 12px 30px}.grid{grid-template-columns:1fr}}
+
+/* Modal */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  display:none;align-items:flex-start;justify-content:center;
+  z-index:1000;padding:30px 14px;overflow-y:auto;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:linear-gradient(180deg,#17233a,#0f1a2d);
+  border:1px solid var(--border);border-radius:24px;
+  max-width:820px;width:100%;padding:28px 30px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+  animation:slide-in .28s cubic-bezier(.4,.0,.2,1);
+  margin-bottom:40px;
+}
+@keyframes slide-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+  padding-bottom:18px;border-bottom:2px solid var(--cc);margin-bottom:22px;
+}
+.modal-head .left .tag{
+  display:inline-flex;padding:5px 12px;border-radius:999px;
+  font-size:.72rem;font-weight:800;background:var(--cc);color:#0b1019;
+  margin-bottom:10px;
+}
+.modal-head h2{font-size:2rem;font-weight:800;margin-bottom:4px}
+.modal-head .role{font-size:.95rem;color:var(--muted);line-height:1.55}
+.modal-head .right{text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.modal-head .date{font-size:.72rem;color:#7081a8}
+.close-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  color:var(--muted);width:36px;height:36px;border-radius:50%;
+  font-size:1.2rem;cursor:pointer;transition:all .18s ease;
+}
+.close-btn:hover{background:rgba(255,255,255,.14);color:var(--text)}
+
+.modal.enemy{--cc:var(--enemy)}
+.modal.neutral{--cc:var(--neutral)}
+.modal.partner{--cc:var(--partner)}
+.modal.lawyer{--cc:var(--lawyer)}
+.modal.love{--cc:var(--love)}
+.modal.family{--cc:var(--family)}
+.modal.friend{--cc:var(--friend)}
+.modal.self{--cc:var(--self)}
+
+.sect{margin-bottom:22px}
+.sect h3{
+  font-size:.88rem;font-weight:800;letter-spacing:.06em;
+  color:var(--cc);margin-bottom:10px;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.sect h3::before{
+  content:'';width:4px;height:16px;background:var(--cc);border-radius:2px;
+}
+.sect .body{font-size:.92rem;line-height:1.65;color:var(--text)}
+.sect .body ul{list-style:none;padding-left:0}
+.sect .body ul li{padding:4px 0 4px 16px;position:relative;color:#d6e0ed}
+.sect .body ul li::before{
+  content:'•';position:absolute;left:0;color:var(--cc);font-weight:800;
+}
+.sect .body ul ul{margin-top:4px;padding-left:14px}
+.sect .body ul ul li::before{content:'◦';color:var(--muted)}
+.sect .body p{color:#d6e0ed;margin:6px 0}
+.sect .body .warn{color:#fca5a5;font-weight:700}
+
+.share-row{
+  display:flex;gap:10px;justify-content:flex-end;margin-top:8px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.share-btn{
+  padding:8px 14px;border-radius:10px;font-size:.8rem;font-weight:700;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:var(--muted);cursor:pointer;transition:all .18s ease;
+}
+.share-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+
+footer{margin-top:40px;text-align:center;color:#6c7c9e;font-size:.78rem;line-height:1.6}
+footer a{color:var(--partner);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1><em>道友</em> · 人物卡片</h1>
+    <p>17 个关键人物的完整博弈拆解。点任意一张卡片进入详情。每个人有自己的深度链接，可以直接跳到某人的卡片。</p>
+    <div class="sub">~/memory/people/ · 跟随对话更新</div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    本页面读取 ~/memory/people/*.md 源文件渲染。<br>
+    深度链接格式：people.html#&lt;名字&gt; · 例如 people.html#贾总
+  </footer>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const PEOPLE = [{"id": "道友", "name": "道友", "subtitle": "", "last_updated": "2026-04-11", "category": "self", "category_label": "本体", "sections": [["基本信息", "- 全名：Wang Chuyuan（王储原）\n- 出生：1994-04-21\n- FIN：G0716175T\n- 地址：10 Lorong Ah Soo #01-06, Singapore 534051\n- 当前身份：JIN XIU Construction GM（公开） + 多条独立业务线（非公开）\n- 在读：RMIT，预计 2027-06 毕业"], ["核心目标（2026-04-08 战略变更）", "**2026 年 7 月摊牌独立**（从原 2028.01 压缩到 2026.07，约 3 个月窗口）\n核心原则：先拿回钱，再谈走不走。需要他的时候不摊牌。"], ["终极需求", "做真我，随心不逾矩。"], ["核心价值观", "赤诚、不卑不亢、从容。"], ["哲学体系", "虚静常明 + 知行合一 + 成住坏空 + 虚己以游世。\n物质是底盘不是目的。真正追求的是自由选择的权利和从容的生活状态。"], ["四个核心模式（需要警惕的旧程序）", "1. **无声付出者**：付出不说需求\n2. **安全区过滤器**：过滤威胁性真相\n3. **系统化一切**：用框架代替直面\n4. **认知替代感受**：\"想明白了\" ≠ \"感受到了\"\n共同根源：害怕失去。更深层：身份认同建立在\"做事\"上。"], ["五条线", "1. 线1：老板公司 GM SGD ~7K/月（2028 退出，现在加速到 2026-07）\n2. 线2：A 公司 SGD ~7K/月\n3. 线3：B 公司（Thunder）SGD ~20K/月（核心资产）\n4. 线4：中介 SGD ~10-20K/月\n5. 线5：C 公司（Kim Shunda）SGD ~15-20K/月\n6. 线6：B 公司分包 SGD ~20K/月"], ["四条红线（触碰任一立刻走）", "1. 降权\n2. 换人\n3. 安插监视\n4. 解雇"], ["财务概况", "- 月收入：约 SGD 44,000-54,000\n- 月支出：约 SGD 5,000\n- 月投资：SGD 23,000-30,000\n- 现有投资：约 SGD 170,000\n- 目标：2029-2030 财务自由（SGD 1,800,000）"], ["离婚进程", "- 案件：FC/OAD 724/2026\n- 状态：无争议离婚\n- ✅ 2026-03-31 律师提交审理申请\n- ⏳ 预计 4 月中 Interim Judgment\n- ⏳ 预计 7 月底 Final Judgment"], ["当前待办（2026-04）", "- 跟贾总催 Jinxiu 欠款 11.1 万\n- Etone 35.6 万追踪（净欠 21 万扣 AP 后）\n- Thunder 撤人 4/15 后到王总\n- 给王总工人名单\n- A 公司 CPF staff 合同合法正规性\n- 姐姐合同\n- 所有公司工人合同正规化\n- 沟通留记录（重要事发文字，微信别删）\n- 全面体检\n- 订 4/23 去广州的酒店"], ["信任评级（自评）", "- 不打草惊蛇能力：高\n- 赤诚但留路能力：在练\n- 知行合一：在练\n- 停止无声付出：在练\n- 感受跟得上认知：在练"], ["已验证的 20 条领悟（索引）", "详见 CLAUDE.md。核心几条：\n1. 焦虑靠拆解解决\n2. 对事赤诚，对己留路\n3. 说三分留七分\n4. 不动就是最好的行动\n5. 撤人不是背叛，是停止免费\n6. 健康是第零层前提。Don't die."], ["来源", "- ~/CLAUDE.md\n- ~/memory/project_strategy_2026-07.md\n- Thunder Sheet, Growth Sheet"]]}, {"id": "刘谦", "name": "刘谦", "subtitle": "贾总外甥的朋友，之前在贾总自己的公司做过", "last_updated": "2026-04-11", "category": "enemy", "category_label": "敌方·贾总系", "sections": [["基本信息", "- 关系：敌方（贾总系跟班）\n- 角色：贾总外甥的朋友，之前在贾总自己的公司做过\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：无\n- 他需要道友什么：跟着外甥混，从贾总公司捞好处\n- 利益冲突点：跟外甥一起想把道友搞掉"], ["性格特征", "- 行为模式：\n  - ⚠️ 卖手套比市场价贵 1.6 元，说\"这是贾总的钱\"\n  - 跟外甥一起审道友\n  - 道友差点哭时他的表情\"好像在看鳄鱼的眼泪\"\n- 沟通风格：冷、观察、不说废话\n- 决策特点：跟外甥走"], ["博弈分析", "- 他的筹码：跟外甥是一伙的、可能是信息传递者\n- 道友的筹码：\n  - ⚠️ 敏感：手套加价 1.6 元的事是把柄——\"这是贾总的钱\"这句话说明贾总通过刘谦从公司抽钱\n- 红线：信息传递给贾总攻击道友\n- 历史事件：2026-04 跟外甥一起审道友，诈失败"], ["信任评级", "- 当前信任度：低（敌）\n- 依据：态度冷漠+与外甥同伙"], ["应对策略", "不理他，不起冲突。手套加价记录在案但不主动用，万一需要自保可以拿出来。"], ["待完善", "- 刘谦在贾总公司的确切历史\n- 他与外甥的关系深度\n- 他在刷手套之外还有没有其他利益输送"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 4\n- ~/memory/chat-sessions.md"]]}, {"id": "孙研", "name": "孙研", "subtitle": "前同事，独立举报者", "last_updated": "2026-04-11", "category": "enemy", "category_label": "敌方·贾总系", "sections": [["基本信息", "- 关系：敌方（前同事）\n- 角色：前同事，独立举报者\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：无\n- 他需要道友什么：通过举报道友来讨好贾总，建立自己的价值\n- 利益冲突点：举报是他的\"投名状\""], ["性格特征", "- 行为模式：\n  - 向贾总举报道友\n  - 道友曾介绍他老婆到现在的公司工作\n  - 道友从没跟贾总闹过，但孙研闹过\n- 沟通风格：（待补充）\n- 决策特点：靠信息换贾总信任"], ["博弈分析", "- 他的筹码：跟贾总有举报通道\n- 道友的筹码：\n  - 他闹过——在贾总眼里不是稳定的人\n  - 道友帮过他老婆——他欠人情\n- 红线：通过他向贾总传递错误信息\n- 历史事件：举报过，但目前没有新动作"], ["信任评级", "- 当前信任度：低（敌）\n- 依据：举报行为是硬证据"], ["应对策略", "不主动提他，他的信用在贾总那里已在下降。不起正面冲突。\n举报模式是用信息换信任——每次查不出问题，信用降一格。"], ["待完善", "- 孙研当前在哪里工作\n- 他跟贾总的沟通频率\n- 他老婆那条线现在是否仍然欠人情"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 5"]]}, {"id": "贾总", "name": "贾总", "subtitle": "JIN XIU Construction 老板。道友是这家公司的 GM，对外身份建立在这里", "last_updated": "2026-04-11", "category": "enemy", "category_label": "敌方·贾总系", "sections": [["基本信息", "- 关系：老板（道友当前雇主）\n- 角色：JIN XIU Construction 老板。道友是这家公司的 GM，对外身份建立在这里\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：GM 平台身份、A 线收入 SGD ~7K/月、工地项目的对外抬头\n- 他需要道友什么：有人管两个工地（Defu/Elias，LTA Cross Island Line MRT），一年半做出约 200 万利润\n- 利益冲突点：\n  - ⚠️ 承诺的 10% 股份从未兑现\n  - ⚠️ 年初答应的车到年底才给，车税 + 个人所得税 1 万要道友自己出\n  - ⚠️ Jinxiu 未收 $111,119（5 张发票，2-3 月 manpower + labour + 宿舍）\n  - 他认为\"道友是不是用我的平台养自己的公司\""], ["性格特征", "- 行为模式：\n  - 用人但不信人，家族优先\n  - 承诺不兑现是固定模式（10% 不给、15 万不付、见面推迟、单子不批——四次同一模式）\n  - 用拖延当控制手段（单子提交了不批、欠款到期不付、见面一直推）\n  - 查账三个月（1-3 月全查）没查出问题就换角度继续查\n  - ⚠️ 通过刘谦从公司抽钱（手套比市场价贵 1.6 元，刘谦说\"这是贾总的钱\"）\n- 沟通风格：需要时找人，不需要时避而不见\n- 决策特点：只要钱在他手里不批，对方就要看他脸色——钱不批就是他的控制工具"], ["博弈分析", "- 他的筹码：\n  - 是老板，控制 Jinxiu 资金审批\n  - 有家族网络\n  - 可以决定道友的正式身份和对外资格\n- 道友的筹码：\n  - ⚠️ 离了道友工地会瘫痪——没有能替代的人，两个工地就两个人在管\n  - ⚠️ Thunder / Wonjar / Kim Shunda 都在他视线之外（信息差优势）\n  - 工地数据和人员关系在道友手里\n- 红线/底线（触碰任一立刻走）：\n  1. 降权\n  2. 换人\n  3. 安插监视\n  4. 解雇\n- 历史事件：\n  - 一年半做出约 200 万利润，月薪只给 7000\n  - 查账三个月没查出问题\n  - 2026-04 安排外甥接管 Jinxiu，让外甥查道友借人的事\n  - 对账诈道友没成功"], ["信任评级", "- 当前信任度：低\n- 依据：\n  - \"需要我但不信任我\"——四次承诺不兑现的固定模式\n  - 他不会主动动道友（没有替代的人），但会持续试探\n  - 他隐约知道 Thunder 是道友的，真正在意的是\"你是不是用我的平台养自己的公司\"\n  - 他的怀疑不会因为查不出问题而消失，只会换方向"], ["应对策略", "不打草惊蛇，催完款就走。不暴露 Thunder、不暴露退出计划。和气生财。\n让他的怀疑得不到证据，让查账的人自己向他汇报\"没问题\"。"], ["待完善", "- 贾总的实际资产规模和家族背景\n- 贾总其他业务线的情况\n- 贾总身边最信任的人是谁（除外甥之外）\n- 他的决策会受谁影响（话术中提到\"你舅的话\"——需要了解他的舅叔角色）"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 2\n- ~/memory/chat-sessions.md\n- ~/memory/project_strategy_2026-07.md"]]}, {"id": "贾总侄子", "name": "贾总侄子", "subtitle": "有自己的公司，依赖道友每月输血维持", "last_updated": "2026-04-11", "category": "enemy", "category_label": "敌方·贾总系", "sections": [["基本信息", "- 关系：贾总的侄子\n- 角色：有自己的公司，依赖道友每月输血维持\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：无\n- 他需要道友什么：每月输血才能维持公司运转\n- 利益冲突点：⚠️ 道友每月留钱给他公司输血，但这个付出不被贾总看见"], ["性格特征", "- 行为模式：依赖输血，没有独立运转能力\n- 沟通风格：（待补充）\n- 决策特点：被动接受"], ["博弈分析", "- 他的筹码：贾总的家族关系\n- 道友的筹码：输血说停就能停\n- 红线：⚠️ 道友走了之后他的公司可能撑不住，贾总可能怪到道友头上\n- 历史事件：道友一直在输血（具体金额/时间待补充）"], ["信任评级", "- 当前信任度：不确定\n- 依据：不是敌也不是友，是寄生者"], ["应对策略", "走之前停止输血。不提这件事。让他自己面对。\n⚠️ 这是道友\"无声付出者\"模式的又一个体现——帮了但不说，对方不知道也不感恩。"], ["待完善", "- 贾总侄子的名字\n- 他公司的名字和业务\n- 每月输血的具体金额\n- 停止输血的最佳时点"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 11\n- ~/memory/chat-sessions.md"]]}, {"id": "贾总外甥", "name": "贾总外甥", "subtitle": "贾总的外甥，正在接管 Jinxiu", "last_updated": "2026-04-11", "category": "enemy", "category_label": "敌方·贾总系", "sections": [["基本信息", "- 关系：敌方\n- 角色：贾总的外甥，正在接管 Jinxiu\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：无\n- 他需要道友什么：找到道友的问题来证明自己接管的价值\n- 利益冲突点：他要接管道友的位置"], ["性格特征", "- 行为模式：\n  - 没有证据就来诈道友承认借人\n  - 对账时一直扯东扯西，不敢真正对数据\n  - 审道友时\"看犯人一样\"\n  - 做事不靠谱，没有实际管理能力\n  - 说\"不要搞得那么尴尬，你承认吧\"——没证据的人才会说的话\n- 沟通风格：施压+诈+拖泥带水\n- 决策特点：靠\"家族身份\"压人，不靠事实"], ["博弈分析", "- 他的筹码：家族身份、贾总的信任\n- 道友的筹码：\n  - 外甥没有管理经验\n  - 外甥没有证据\n  - 外甥诈失败后信用下降\n- 红线：安插监视属于四条红线之一\n- 历史事件：\n  - 2026-04 对账诈道友失败\n  - 又说\"晨会记录少人要再查\"，换角度继续找"], ["信任评级", "- 当前信任度：低（敌）\n- 依据：没证据来诈+审犯人的态度"], ["应对策略", "配合但不卑不亢，不给他把柄。让他自己去跟贾总汇报\"没查出问题\"——让举报的人自己打自己的脸。\n他来查账不是为了真相，是为了接管。"], ["待完善", "- 外甥的名字\n- 外甥在 Jinxiu 的正式职位\n- 外甥接管的具体时间表"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 3\n- ~/memory/chat-sessions.md"]]}, {"id": "王哥", "name": "王哥", "subtitle": "Jinxiu 内部同事，有亲戚在公司里", "last_updated": "2026-04-11", "category": "neutral", "category_label": "中立", "sections": [["基本信息", "- 关系：同事\n- 角色：Jinxiu 内部同事，有亲戚在公司里\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：工作中的日常配合\n- 他需要道友什么：保住自己的位置\n- 利益冲突点：无直接冲突，但亲戚是潜在泄漏点"], ["性格特征", "- 行为模式：稳定，不主动惹事\n- 沟通风格：（待补充）\n- 决策特点：保守、自保型"], ["博弈分析", "- 他的筹码：有亲戚在公司内部\n- 道友的筹码：正常同事关系\n- 红线：⚠️ 亲戚可能会向贾总家族传递信息\n- 历史事件：（待补充）"], ["信任评级", "- 当前信任度：中立偏友\n- 依据：没有敌对动作，但亲戚关系让他不能成为盟友"], ["应对策略", "保持关系但不透露任何计划。不当盟友也不当敌人。"], ["待完善", "- 王哥的亲戚是谁，在公司什么位置\n- 王哥本人的真实立场（中立是默认，还是他已经站队了）\n- 他跟贾总外甥/刘谦的关系"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 6"]]}, {"id": "Etone总经理", "name": "Etone 总经理", "subtitle": "Zhejiang Etone Specialized Foundation Engineering Co. Ltd. (SG Branch) 总经理", "last_updated": "2026-04-11", "category": "partner", "category_label": "合作方", "sections": [["基本信息", "- 关系：合作方\n- 角色：Zhejiang Etone Specialized Foundation Engineering Co. Ltd. (SG Branch) 总经理\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：\n  - Etone 项目是道友 Thunder 和 Wonjar 的收入来源\n  - 回款 $355,914（6 张发票，1-3 月 labour）\n- 他需要道友什么：项目执行、团队支持\n- 利益冲突点：欠款未清，但这是链条问题不是诚信问题"], ["性格特征", "- 行为模式：合作态度，但受制于总包回款\n- 沟通风格：（待补充）\n- 决策特点：被上游卡住时无法单方面决策"], ["博弈分析", "- 他的筹码：Etone 项目是道友的主要收入来源之一\n- 道友的筹码：\n  - Thunder 欠 Etone AP $145,282（净欠 $210,632）\n  - Kim Shunda 3/20 后 50% 分成\n  - Wonjar 筹建中，预计 5 月 BLS 到手\n- 红线：总包持续不付款导致链条断裂\n- 历史事件：\n  - 2026-04-09 回款 $35,000（Etone）\n  - Jinxiu 净欠：11.1 万\n  - Etone 净欠（扣 AP 后）：21 万\n  - 总净应收：32.1 万"], ["信任评级", "- 当前信任度：合作（较高）\n- 依据：他欠的钱是链条问题不是诚信问题——区别于贾总（贾总是有钱不给，Etone 是没收到钱所以给不了）"], ["应对策略", "每两周跟进回款，保持关系。Wonjar 是未来主要合作主体。"], ["待完善", "- Etone 总经理的名字和直接联系方式\n- Etone 上游总包的付款节奏\n- Wonjar BLS 的确切时间表"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 9\n- ~/memory/project_companies.md"]]}, {"id": "王总", "name": "王总", "subtitle": "接收道友 Thunder 撤出的工人的新老板", "last_updated": "2026-04-11", "category": "partner", "category_label": "合作方", "sections": [["基本信息", "- 关系：新合作方（Thunder 撤人接收方）\n- 角色：接收道友 Thunder 撤出的工人的新老板\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：接收 Thunder 工人，帮道友平滑撤人\n- 他需要道友什么：需要工人名单和配合\n- 利益冲突点：（待观察）"], ["性格特征", "- 行为模式：（待补充）\n- 沟通风格：（待补充）\n- 决策特点：（待补充）"], ["博弈分析", "- 他的筹码：接收工人的能力\n- 道友的筹码：工人本身\n- 红线：（待补充）\n- 历史事件：\n  - 4/15 后 Thunder 撤人转到王总\n  - 需要给王总工人名单"], ["信任评级", "- 当前信任度：待观察\n- 依据：新合作，信息不足"], ["应对策略", "按计划 4/15 后撤人。给清单时只给必要的信息，不暴露 Thunder/Wonjar 的整体结构。"], ["待完善", "- 王总全名\n- 王总公司的名字和业务\n- 他跟贾总系有没有交集（⚠️ 重点排查）\n- 工人转过去之后的条件/合同"], ["来源", "- ~/CLAUDE.md 待办清单\n- ~/memory/chat-sessions.md"]]}, {"id": "Poh-Jun-Zhe", "name": "Poh Jun Zhe", "subtitle": "代表道友办理离婚案 FC/OAD 724/2026", "last_updated": "2026-04-11", "category": "lawyer", "category_label": "律师", "sections": [["基本信息", "- 关系：离婚律师\n- 角色：代表道友办理离婚案 FC/OAD 724/2026\n- 律所：Malcus Poh Law Corporation\n- 地址：10 Anson Road #17-02 International Plaza\n- 邮箱：malcus@malcuspohlaw.com\n- 电话：6531 0706"], ["利益关系", "- 道友需要他什么：顺利拿到 Interim Judgment 和 Final Judgment\n- 他需要道友什么：按流程配合、付律师费\n- 利益冲突点：无"], ["性格特征", "- 行为模式：（待补充，按流程走）\n- 沟通风格：（待补充）\n- 决策特点：（待补充）"], ["博弈分析", "不是博弈对象，是专业服务提供方。"], ["信任评级", "- 当前信任度：待观察\n- 依据：合作时间短，按流程执行"], ["历史事件", "- 2026-03-31 提交审理申请 + 宣誓书\n- ⏳ 预计 4 月中 Interim Judgment\n- ⏳ 预计 7 月底 Final Judgment"], ["待完善", "- 律师的能力评估（是否可以胜任复杂情况）\n- 总费用和付费节奏\n- 如果进入 contested 状态的应对方案\n- 他是否处理过外国人 + 中国籍配偶的案子"], ["来源", "- ~/CLAUDE.md"]]}, {"id": "她-主播", "name": "她 / 主播", "subtitle": "正在观察中的暧昧对象", "last_updated": "2026-04-11", "category": "love", "category_label": "情感线", "sections": [["基本信息", "- 关系：直播认识，新的情感关系\n- 角色：正在观察中的暧昧对象\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：陪伴、情绪出口\n- 他需要道友什么：不确定，观察中\n- 利益冲突点：\n  - ⚠️ 道友没告诉她离过婚——\"不真诚的开始\"\n  - ⚠️ 可能是低谷期止痛药\n  - ⚠️ 金钱观差距大（她为前男友花 600 万上报纸）"], ["性格特征", "- 行为模式：\n  - 外人面前古灵精怪，道友面前很乖\n  - 像黄蓉\n  - 不喜欢欠别人\n  - 经常提前男友，可能没走出来\n  - 喜欢炫富\n  - 从小一对一教育，家里富有\n  - 全国旅居，现在河北\n- 沟通风格：说\"不一定所有事都要有结果，过程也很重要\"\n- 决策特点：（待观察）"], ["博弈分析", "- 他的筹码：不适用（非博弈关系）\n- 道友的筹码：不适用\n- 红线：\n  - ⚠️ 不在直播间刷钱\n  - ⚠️ 月花费上限 3000 新币\n- 历史事件：\n  - 认识不到一周\n  - 道友花了约 6000 RMB\n  - 有隔空亲密行为\n  - ⚠️ 在道友被贾总审的那晚出现——\"最缺快乐的时候\""], ["信任评级", "- 当前信任度：友 / 暧昧（观察期）\n- 依据：认识时间短，判断依据不足"], ["应对策略", "享受过程。一个月内找机会告诉她离婚的事。一个月后评估真心动还是止痛药。"], ["关键警报", "⚠️ 旧程序（无声付出者）可能重复\n⚠️ 两个无声付出者可能互相消耗\n⚠️ 需要分清\"喜欢她这个人\"还是\"喜欢有人让我快乐这个感觉\""], ["待完善", "- 她的真实姓名\n- 她的真实经济来源\n- 一个月后的评估结果"], ["来源", "- Growth Sheet / Character_Cards / row 8\n- ~/memory/chat-sessions.md"]]}, {"id": "郑子叶", "name": "郑子叶", "subtitle": "婚姻 7 年的伴侣，正在走无争议离婚流程", "last_updated": "2026-04-11", "category": "love", "category_label": "情感线", "sections": [["基本信息", "- 关系：前妻，正在离婚\n- 角色：婚姻 7 年的伴侣，正在走无争议离婚流程\n- 案件号：FC/OAD 724/2026\n- 联系方式：⚠️ 微信备注名\"欠我五万\"（道友的记号）"], ["利益关系", "- 道友需要他什么：顺利走完无争议离婚流程，拿到 Final Judgment\n- 他需要道友什么：可能想拿更多的钱（附属事项阶段）\n- 利益冲突点：\n  - 判之前给钱可能在附属事项阶段要更多\n  - 道友计划在 Final 后转 15-20 万 RMB 备注\"自愿赠予\"\n  - 三年短婚、无孩子、无共同财产——她的法律牌很弱"], ["性格特征", "- 行为模式：\n  - ⚠️ 七年婚姻里道友不说需求，她也不主动给\n  - ⚠️ 用七年搅乱了道友的感受校准系统\n- 沟通风格：（已切断）\n- 决策特点：（待补充）"], ["博弈分析", "- 他的筹码：如果在附属事项阶段提要求会拖延流程\n- 道友的筹码：\n  - 三年短婚无孩子无共同财产，她的牌很弱\n  - 无争议路线，走流程几乎不可能翻车\n- 红线：判之前不给钱\n- 历史事件：\n  - 2026-03-31 律师提交审理申请 + 宣誓书\n  - ⏳ 预计 4 月中 Interim Judgment\n  - ⏳ 预计 7 月底 Final Judgment"], ["信任评级", "- 当前信任度：已切断\n- 依据：已无交集，只等流程走完"], ["应对策略", "判之前不给钱。Final 后：取消 DP → 律师发函 → 转钱 15-20 万 RMB 备注自愿赠予 → 确认到账 → 拉黑。"], ["关键领悟", "- 道友对前妻 100% 赤诚，七年不说需求\n- 100% 赤诚的结果婚姻已给答案——对事赤诚，对己留路\n- 道友写了告别信给自己（不发），是情感上的冢"], ["待完善", "- 她当前的实际状态（是否接受无争议路线）\n- 她律师方的动向（如有）"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 7\n- ~/memory/chat-sessions.md"]]}, {"id": "妈妈", "name": "妈妈", "subtitle": "亲人", "last_updated": "2026-04-11", "category": "family", "category_label": "家人", "sections": [["基本信息", "- 关系：母亲\n- 角色：亲人\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：情感连接，无条件的爱\n- 他需要道友什么：儿子平安稳定\n- 利益冲突点：她的建议基于不完整的信息"], ["性格特征", "- 行为模式：\n  - 会说\"要感恩\"\n  - 劝道友不要跟老板闹\n- 沟通风格：上一代人的生存哲学语言\n- 决策特点：保守，稳定优先"], ["博弈分析", "- 她的牌：不适用（非博弈关系）\n- 道友的牌：不适用\n- 红线：无\n- 历史事件：（待补充）"], ["信任评级", "- 当前信任度：爱但不理解\n- 依据：爱没问题，但商业判断的信息基础不完整"], ["应对策略", "不说服她，按自己的判断行动。爱她但不听她的商业判断。"], ["关键领悟", "\"感恩\"是上一代人的生存哲学——信息不完整所以建议不完整。"], ["待完善", "- 妈妈的身体状况（4/23 回国要一起体检吗？）\n- 妈妈对道友离婚的实际态度\n- 妈妈对道友摊牌独立的潜在反应"], ["来源", "- ~/CLAUDE.md\n- Growth Sheet / Character_Cards / row 10"]]}, {"id": "姐姐", "name": "姐姐", "subtitle": "家人", "last_updated": "2026-04-11", "category": "family", "category_label": "家人", "sections": [["基本信息", "- 关系：姐姐\n- 角色：家人\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：家人的信任\n- 他需要道友什么：合同相关的安排（待办事项提到\"姐姐合同\"）\n- 利益冲突点：无"], ["性格特征", "- 行为模式：（待补充）\n- 沟通风格：（待补充）\n- 决策特点：（待补充）"], ["博弈分析", "不适用（家人，非博弈关系）。"], ["信任评级", "- 当前信任度：高（家人）\n- 依据：（待补充）"], ["待办关联", "- ⏳ \"姐姐合同\"在道友 2026 年 4 月待办清单中"], ["待完善", "- 姐姐的名字、年龄、现在在哪里\n- \"姐姐合同\"具体指什么（工作合同？公司合同？）\n- 她是否在道友公司之一担任名义角色\n- 她的家庭情况"], ["来源", "- ~/CLAUDE.md 待办清单\n- ~/memory/chat-sessions.md"]]}, {"id": "朋友2303", "name": "朋友 2303", "subtitle": "4/23 广州行程的同行人之一", "last_updated": "2026-04-11", "category": "friend", "category_label": "朋友", "sections": [["基本信息", "- 关系：朋友\n- 角色：4/23 广州行程的同行人之一\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：旅途同行、朋友陪伴\n- 他需要道友什么：（待补充）\n- 利益冲突点：无"], ["性格特征", "- 行为模式：（待补充）\n- 沟通风格：（待补充）\n- 决策特点：（待补充）"], ["博弈分析", "不适用。"], ["信任评级", "- 当前信任度：友\n- 依据：愿意同行的朋友"], ["历史事件", "- 2026-04-23 广州行同行"], ["待完善", "- 真实名字（2303 应该是代号或群备注）\n- 朋友的背景\n- 他跟阿黄的关系"], ["来源", "- ~/memory/project_guangzhou_trip.md"]]}, {"id": "赵总", "name": "赵总", "subtitle": "朋友 + 前 BCA PE（私募股权背景）", "last_updated": "2026-04-11", "category": "friend", "category_label": "朋友", "sections": [["基本信息", "- 关系：朋友\n- 角色：朋友 + 前 BCA PE（私募股权背景）\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：学习、人脉、对 C 公司/Wonjar 拿项目的可能帮助\n- 他需要道友什么：（待补充）\n- 利益冲突点：无"], ["性格特征", "- 行为模式：（待补充）\n- 沟通风格：朋友关系\n- 决策特点：（待补充）"], ["博弈分析", "不是博弈对象，是资源/人脉。"], ["信任评级", "- 当前信任度：友\n- 依据：正常朋友关系，已吃饭"], ["历史事件", "- 2026-04-06（周一中午）已吃过饭"], ["⚠️ 重要纠正", "之前 CLAUDE.md 曾把\"催款对象老板\"误写成赵总。\n正确身份：赵总 = 朋友 + 前 BCA PE（学习/人脉资源），不是催款对象。催款对象是贾总。"], ["应对策略", "保持朋友关系，有项目需要人脉时可以请教。不把他当工具人用。"], ["待完善", "- 赵总的全名\n- 他现在的具体工作/业务\n- 他跟道友的关系深度\n- 他对道友摊牌独立计划的知情程度（应该是 0，不应该告诉他）"], ["来源", "- ~/CLAUDE.md\n- ~/memory/chat-sessions.md\n- ~/memory/project_strategy_2026-07.md"]]}, {"id": "阿黄", "name": "阿黄", "subtitle": "4/23 广州行程的同行人之一", "last_updated": "2026-04-11", "category": "friend", "category_label": "朋友", "sections": [["基本信息", "- 关系：朋友（在广州）\n- 角色：4/23 广州行程的同行人之一\n- 联系方式：（待补充）"], ["利益关系", "- 道友需要他什么：旅途同行、朋友陪伴、可能当地向导\n- 他需要道友什么：（待补充）\n- 利益冲突点：无"], ["性格特征", "- 行为模式：（待补充）\n- 沟通风格：（待补充）\n- 决策特点：（待补充）"], ["博弈分析", "不适用。"], ["信任评级", "- 当前信任度：友\n- 依据：愿意在广州接待的朋友"], ["历史事件", "- 2026-04-23 广州行同行"], ["待完善", "- 真实名字（阿黄是昵称）\n- 他在广州做什么\n- 他跟朋友 2303 的关系\n- 他跟道友的认识渊源"], ["来源", "- ~/memory/project_guangzhou_trip.md"]]}];
+const CATS = [
+  {key:'all',label:'全部',count:PEOPLE.length},
+  {key:'self',label:'本体',count:PEOPLE.filter(p=>p.category==='self').length},
+  {key:'enemy',label:'敌方·贾总系',count:PEOPLE.filter(p=>p.category==='enemy').length},
+  {key:'partner',label:'合作方',count:PEOPLE.filter(p=>p.category==='partner').length},
+  {key:'neutral',label:'中立',count:PEOPLE.filter(p=>p.category==='neutral').length},
+  {key:'lawyer',label:'律师',count:PEOPLE.filter(p=>p.category==='lawyer').length},
+  {key:'love',label:'情感线',count:PEOPLE.filter(p=>p.category==='love').length},
+  {key:'family',label:'家人',count:PEOPLE.filter(p=>p.category==='family').length},
+  {key:'friend',label:'朋友',count:PEOPLE.filter(p=>p.category==='friend').length},
+];
+
+function renderFilters(active){
+  const f = document.getElementById('filters');
+  f.innerHTML = CATS.map(c=>`<button class="filter-btn ${c.key===active?'active':''}" data-k="${c.key}">${c.label}<span class="count">${c.count}</span></button>`).join('');
+  f.querySelectorAll('.filter-btn').forEach(b=>{
+    b.onclick = () => renderGrid(b.dataset.k);
+  });
+}
+
+function renderGrid(filter){
+  const g = document.getElementById('grid');
+  const items = filter==='all' ? PEOPLE : PEOPLE.filter(p=>p.category===filter);
+  g.innerHTML = items.map(p=>{
+    const firstBullet = extractFirstBullet(p);
+    return `<div class="card ${p.category}" data-id="${p.id}">
+      <div class="tag">${p.category_label}</div>
+      <div class="name">${escapeHtml(p.name)}</div>
+      <div class="sub">${escapeHtml(p.subtitle || firstBullet || '详情见卡片')}</div>
+      <div class="meta">最后更新 ${p.last_updated || '—'}</div>
+    </div>`;
+  }).join('');
+  g.querySelectorAll('.card').forEach(c=>{
+    c.onclick = () => openModal(c.dataset.id);
+  });
+  renderFilters(filter);
+}
+
+function extractFirstBullet(p){
+  for (const [h, body] of p.sections){
+    for (const line of body.split('\n')){
+      const t = line.trim();
+      if (t.startsWith('- ')) return t.slice(2).replace(/⚠️\s*/g, '').slice(0, 80);
+    }
+  }
+  return '';
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function parseSectionBody(body){
+  // Convert lines to HTML: bullets, sub-bullets, paragraphs.
+  const out = [];
+  const lines = body.split('\n');
+  let ul_stack = [];
+  function closeTo(level){
+    while (ul_stack.length > level){
+      out.push('</ul>');
+      ul_stack.pop();
+    }
+  }
+  for (const raw of lines){
+    if (!raw.trim()){ continue; }
+    const indent = raw.match(/^(\s*)/)[1].length;
+    const level = indent >= 2 ? 2 : 1;
+    if (raw.trim().startsWith('- ')){
+      if (ul_stack.length < level){
+        out.push('<ul>');
+        ul_stack.push(level);
+      } else if (ul_stack.length > level){
+        closeTo(level);
+      }
+      let text = raw.trim().slice(2);
+      text = escapeHtml(text);
+      // Highlight ⚠️
+      if (text.includes('⚠️') || text.startsWith('[!]')){
+        text = `<span class="warn">${text.replace(/⚠️/g, '[!]')}</span>`;
+      }
+      out.push(`<li>${text}</li>`);
+    } else {
+      closeTo(0);
+      out.push(`<p>${escapeHtml(raw.trim())}</p>`);
+    }
+  }
+  closeTo(0);
+  return out.join('');
+}
+
+function openModal(id){
+  const p = PEOPLE.find(x=>x.id===id);
+  if (!p) return;
+  const modal = document.getElementById('modal');
+  modal.className = `modal ${p.category}`;
+  const sectsHtml = p.sections.map(([h, body]) => `
+    <div class="sect">
+      <h3>${escapeHtml(h)}</h3>
+      <div class="body">${parseSectionBody(body)}</div>
+    </div>
+  `).join('');
+  modal.innerHTML = `
+    <div class="modal-head">
+      <div class="left">
+        <div class="tag">${p.category_label}</div>
+        <h2>${escapeHtml(p.name)}</h2>
+        <div class="role">${escapeHtml(p.subtitle || '')}</div>
+      </div>
+      <div class="right">
+        <button class="close-btn" onclick="closeModal()">✕</button>
+        <div class="date">最后更新 ${p.last_updated || '—'}</div>
+      </div>
+    </div>
+    ${sectsHtml}
+    <div class="share-row">
+      <button class="share-btn" onclick="copyLink('${p.id}')">复制深度链接</button>
+      <button class="share-btn" onclick="closeModal()">关闭</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('open');
+  location.hash = p.id;
+}
+
+function closeModal(){
+  document.getElementById('modal-bg').classList.remove('open');
+  history.pushState('', document.title, location.pathname + location.search);
+}
+
+function copyLink(id){
+  const url = location.origin + location.pathname + '#' + encodeURIComponent(id);
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    setTimeout(()=>btn.textContent=orig, 1400);
+  });
+}
+
+document.getElementById('modal-bg').onclick = (e)=>{
+  if (e.target.id === 'modal-bg') closeModal();
+};
+
+window.addEventListener('keydown', e=>{
+  if (e.key === 'Escape') closeModal();
+});
+
+// Initial render + hash routing
+renderGrid('all');
+if (location.hash){
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (PEOPLE.find(p=>p.id===id)) openModal(id);
+}
+window.addEventListener('hashchange', ()=>{
+  if (!location.hash){ closeModal(); return; }
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (PEOPLE.find(p=>p.id===id)) openModal(id);
+});
+</script>
+</body>
+</html>
